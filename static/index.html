@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+        crossorigin="anonymous">
+
+    <title>Test if a URI matches a given URI Template (RFC6570)</title>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Test if a URI matches a given URI Template</h1>
+            <p>Test your URI Templates (defined by <a href="https://tools.ietf.org/html/rfc6570">RFC6570</a>)</p>
+        </header>
+
+        <hr>
+
+        <section>
+            <h2>Match</h2>
+
+            <form id="match">
+                <div class="form-group">
+                    <label for="matchTemplate">URI Template</label>
+                    <input name="template" class="form-control" id="matchTemplate" aria-describedby="matchTemplateHelp"
+                        placeholder="http://example.com/foo/{bar)" required>
+                    <small id="matchTemplateHelp" class="form-text text-muted">A URI template.</small>
+                </div>
+                <div class="form-group">
+                    <label for="matchURI">URI</label>
+                    <input name="uri" class="form-control" id="matchURI" aria-describedby="matchURIHelp" placeholder="http://example.com/foo/hello"
+                        required>
+                    <small id="matchURIHelp" class="form-text text-muted">Test URI to test against the template.</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Match?</button>
+            </form>
+
+            <hr>
+
+            <div class="collapse alert alert-danger" id="matchFailure">
+                <h4 class="alert-heading">Doesn't match 😐</h4>
+            </div>
+
+            <div class="collapse alert alert-success" id="matchSuccess">
+                    <h4 class="alert-heading">Match 😬</h4>
+                    <pre><code></code></pre>
+                </div>
+    
+        </section>
+
+        <section>
+            <h2>API Docs</h2>
+            <p><code>/match?template={templateURI}&uri={URItoTest}</code></p>
+        </section>
+
+
+        <p>Some valid URI templates:</p>
+        <ul>
+            <li><code>http://example.com/~{username}/</code></li>
+            <li><code>http://example.com/dictionary/{term:1}/{term}</code></li>
+            <li><code>http://example.com/search{?q,lang}</code></li>
+        </ul>
+
+        <footer>
+            Created by <a href="https://dunglas.fr">Kévin Dunglas</a>.
+            Sponsored by <a href="https://les-tilleuls.coop>">Les-Tilleuls.coop</a>.
+            <a href="https://github.com/dunglas/uri-template-tester">Source code</a>.
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
