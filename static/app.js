@@ -62,5 +62,5 @@
     const matchURIParam = urlParams.get('matchURI');
     if (matchURIParam) matchURI.value = matchURIParam;
 
-    if (matchTemplate && matchURI) executeMatch();
+    if (matchURIParam && matchURIParam) executeMatch();
 })();
