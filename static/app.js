@@ -3,8 +3,10 @@
 $(
     $('#match').submit(function (e) {
         e.preventDefault();
+        const elError = $('#matchError');
         const elMatch = $('#matchSuccess');
         const elNoMatch = $('#matchFailure');
+        elError.collapse('hide');
         elMatch.collapse('hide');
         elNoMatch.collapse('hide');
 
@@ -17,7 +19,6 @@ $(
         fetch(u)
             .then(data => data.json())
             .then(data => {
-
                 if (data.Match) {
                     elMatch.find('pre code').text(JSON.stringify(data.Values, null, 2));
                     elMatch.collapse('show');
@@ -29,6 +30,11 @@ $(
                     elNoMatch.collapse('show');
 
                     return;
+                }
+
+                if (data.Error) {
+                    elError.find('h4').text(data.Error, null, 2);
+                    elError.collapse('show');
                 }
             });
     })
