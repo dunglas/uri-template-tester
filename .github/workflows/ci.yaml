@@ -18,3 +18,5 @@ jobs:
       uses: docker://golangci/golangci-lint:latest
       with:
         args: golangci-lint run ./...
+    - name: Lint Helm Chart
+      run: helm lint chart/uri-template-tester
