@@ -43,7 +43,7 @@ func match(w http.ResponseWriter, r *http.Request) {
 	match := tpl.Match(uri)
 	if match == nil {
 		err, _ := json.Marshal(struct{ Match bool }{false})
-		fmt.Fprintf(w, string(err))
+		fmt.Fprintf(w, "%s", string(err))
 		return
 	}
 
@@ -51,5 +51,7 @@ func match(w http.ResponseWriter, r *http.Request) {
 		Match  bool
 		Values uritemplate.Values
 	}{true, match}, "", "  ")
-	w.Write(json)
+	if _, err := w.Write(json); err != nil {
+		panic(err)
+	}
 }

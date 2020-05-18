@@ -11,12 +11,15 @@ type error struct {
 
 func main() {
 	http.HandleFunc("/match", match)
-	fs := http.FileServer(http.Dir("static"))
+	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "http"
 	}
-	http.ListenAndServe(":"+port, nil)
+
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		panic(err)
+	}
 }
