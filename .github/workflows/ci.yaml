@@ -4,19 +4,17 @@ on:
   push:
   pull_request:
 
-env:
-  GO111MODULE: 'on'
-
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
-      uses: actions/checkout@master
-    - name: Lint Go Code
-      uses: docker://golangci/golangci-lint:latest
+      uses: actions/checkout@v5
+    - uses: actions/setup-go@v5
       with:
-        args: golangci-lint run ./...
+        go-version: stable
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v8
     - name: Lint Helm Chart
       run: helm lint chart/uri-template-tester
