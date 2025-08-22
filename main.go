@@ -5,10 +5,6 @@ import (
 	"os"
 )
 
-type error struct {
-	Error string
-}
-
 func main() {
 	http.HandleFunc("/match", match)
 	fs := http.FileServer(http.Dir("public"))
