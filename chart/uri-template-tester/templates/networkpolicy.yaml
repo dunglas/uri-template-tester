@@ -25,7 +25,9 @@ spec:
         - protocol: TCP
           port: {{ .Values.containerPort }}
   # The app makes no outbound HTTP calls; only DNS is permitted, plus
-  # same-namespace egress so `helm test` can hit the Service backend.
+  # same-namespace egress to the app's own port so `helm test` (which
+  # the policy also matches via shared chart labels) can hit the Service
+  # backend.
   egress:
     - to:
         - namespaceSelector:
@@ -38,4 +40,7 @@ spec:
           port: 53
     - to:
         - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.containerPort }}
 {{- end }}
