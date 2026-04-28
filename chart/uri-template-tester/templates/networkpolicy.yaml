@@ -6,9 +6,13 @@ metadata:
   labels:
     {{- include "uri-template-tester.labels" . | nindent 4 }}
 spec:
+  # Selects only the Deployment pods (component=server). The Helm test
+  # pod inherits selectorLabels via `<chart>.labels` but does not get the
+  # component label, so it isn't subject to this policy.
   podSelector:
     matchLabels:
       {{- include "uri-template-tester.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
   policyTypes:
     - Ingress
     - Egress
@@ -24,10 +28,7 @@ spec:
       ports:
         - protocol: TCP
           port: {{ .Values.containerPort }}
-  # The app makes no outbound HTTP calls; only DNS is permitted, plus
-  # same-namespace egress to the app's own port so `helm test` (which
-  # the policy also matches via shared chart labels) can hit the Service
-  # backend.
+  # The app makes no outbound HTTP calls; only DNS is permitted.
   egress:
     - to:
         - namespaceSelector:
@@ -38,9 +39,4 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-    - to:
-        - podSelector: {}
-      ports:
-        - protocol: TCP
-          port: {{ .Values.containerPort }}
 {{- end }}

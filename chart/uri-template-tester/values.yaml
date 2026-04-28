@@ -103,11 +103,15 @@ readinessProbe:
   timeoutSeconds: 5
   failureThreshold: 4
 
-# NetworkPolicy: ingress is allowed from the configured ingress controller
-# namespace and from the release namespace itself (so `helm test` and other
-# in-namespace callers keep working); egress is restricted to DNS only
-# (the app makes no outbound HTTP calls). Namespaces are matched via the
-# kubernetes.io/metadata.name auto-label (always present on K8s 1.22+).
+# NetworkPolicy: scoped to Deployment pods only (via app.kubernetes.io/
+# component=server), so the Helm test pod isn't subject to it. Ingress is
+# allowed from the configured ingress controller namespace and from the
+# release namespace itself (the latter lets `helm test` reach the
+# Service); egress is restricted to DNS only — the app makes no outbound
+# HTTP calls.
+#
+# Namespaces are matched via the kubernetes.io/metadata.name auto-label
+# (always present on K8s 1.22+).
 #
 # Note on kubelet probes: this policy assumes a CNI that exempts kubelet
 # health checks from NetworkPolicy enforcement (Cilium, Calico with
