@@ -108,6 +108,11 @@ readinessProbe:
 # in-namespace callers keep working); egress is restricted to DNS only
 # (the app makes no outbound HTTP calls). Namespaces are matched via the
 # kubernetes.io/metadata.name auto-label (always present on K8s 1.22+).
+#
+# Note on kubelet probes: this policy assumes a CNI that exempts kubelet
+# health checks from NetworkPolicy enforcement (Cilium, Calico with
+# `kubelet`-exempt config, etc.). If your CNI doesn't, add an ipBlock for
+# the node CIDRs to the ingress rules or set networkPolicy.enabled=false.
 networkPolicy:
   enabled: true
   ingressNamespace: ingress-nginx

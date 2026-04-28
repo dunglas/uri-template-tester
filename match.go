@@ -15,8 +15,6 @@ type jsonError struct {
 }
 
 func match(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/payload")
-	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("X-Frame-Options", "deny")
 
 	query := r.URL.Query()
@@ -62,6 +60,8 @@ func writeJSON(w http.ResponseWriter, r *http.Request, status int, body any) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(status)
 	if _, err := w.Write(payload); err != nil {
 		slog.Info("failed to write response", "remote_addr", r.RemoteAddr, "error", err)
