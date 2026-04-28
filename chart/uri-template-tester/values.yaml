@@ -7,8 +7,9 @@ replicaCount: 1
 image:
   repository: dunglas/uri-template-tester
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart version.
-  tag: "0.2.0"
+  # The release pipeline (goreleaser) tags Docker images with the leading
+  # `v` (`v0.2.0`, `v0.2`, `v0`, `latest`). Match that here.
+  tag: "v0.2.0"
 
 imagePullSecrets: []
 nameOverride: ""

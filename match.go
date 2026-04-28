@@ -75,7 +75,12 @@ func writeJSONError(w http.ResponseWriter, r *http.Request, status int, msg stri
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	http.Error(w, string(payload), status)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.WriteHeader(status)
+	if _, err := w.Write(payload); err != nil {
+		slog.Info("failed to write response", "remote_addr", r.RemoteAddr, "error", err)
+	}
 }
 
 // flattenValues turns uritemplate/v3's Values into a JSON-friendly shape:
