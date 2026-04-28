@@ -1,5 +1,5 @@
 module github.com/dunglas/uri-template-tester
 
-go 1.14
+go 1.26
 
-require github.com/yosida95/uritemplate v2.0.0+incompatible
+require github.com/yosida95/uritemplate/v3 v3.0.2
