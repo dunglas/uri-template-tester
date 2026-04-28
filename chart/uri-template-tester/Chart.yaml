@@ -4,4 +4,7 @@ description: Test if a URI matches a given URI template (RFC6570)
 type: application
 version: 0.2.0
 appVersion: "0.2.0"
-kubeVersion: ">=1.19.0-0"
+# Targets recent Kubernetes only: NetworkPolicy templates rely on the
+# kubernetes.io/metadata.name auto-label (GA in 1.22) and the chart
+# optionally renders a Gateway API HTTPRoute (v1 GA in 1.30).
+kubeVersion: ">=1.30.0-0"

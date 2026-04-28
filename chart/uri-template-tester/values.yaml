@@ -55,6 +55,23 @@ ingress:
           pathType: Prefix
   tls: []
 
+# Gateway API HTTPRoute alternative to Ingress. Enable one or the other
+# (or both, for migrations). The referenced Gateway must already exist.
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  #  - name: my-gateway
+  #    namespace: gateway-system
+  #    sectionName: https
+  hostnames: []
+  #  - uri-template-tester.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
 # No CPU limit on purpose: CFS quota throttling on the cluster causes
 # probe timeouts and latency spikes even when nodes have spare cycles.
 # Static Go binary is tiny; memory limit is just an OOM safety net.
@@ -86,7 +103,8 @@ readinessProbe:
   failureThreshold: 4
 
 # NetworkPolicy locking ingress to the ingress-nginx namespace and egress to
-# DNS only (this app makes no outbound calls).
+# DNS only (this app makes no outbound calls). Namespaces are matched via
+# the kubernetes.io/metadata.name auto-label (always present on K8s 1.22+).
 networkPolicy:
   enabled: true
   ingressNamespace: ingress-nginx
