@@ -33,37 +33,49 @@ func match(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(errors) > 0 {
-		payload, _ := json.MarshalIndent(jsonError{strings.Join(errors, " ")}, "", "  ")
-		http.Error(w, string(payload), http.StatusBadRequest)
-
+		writeJSONError(w, r, http.StatusBadRequest, strings.Join(errors, " "))
 		return
 	}
 
 	tpl, err := uritemplate.New(template)
 	if nil != err {
-		payload, _ := json.MarshalIndent(jsonError{fmt.Sprintf(`"%s" is not a valid URI template (RFC6570).`, template)}, "", "  ")
-		http.Error(w, string(payload), http.StatusBadRequest)
-
+		writeJSONError(w, r, http.StatusBadRequest, fmt.Sprintf(`"%s" is not a valid URI template (RFC6570).`, template))
 		return
 	}
 
 	match := tpl.Match(uri)
 	if match == nil {
-		payload, _ := json.Marshal(struct{ Match bool }{false})
-		if _, err := w.Write(payload); err != nil {
-			slog.Info("failed to write response", "remote_addr", r.RemoteAddr, "error", err)
-		}
-
+		writeJSON(w, r, http.StatusOK, struct{ Match bool }{false})
 		return
 	}
 
-	payload, _ := json.MarshalIndent(struct {
+	writeJSON(w, r, http.StatusOK, struct {
 		Match  bool
 		Values map[string]any
-	}{true, flattenValues(match)}, "", "  ")
+	}{true, flattenValues(match)})
+}
+
+func writeJSON(w http.ResponseWriter, r *http.Request, status int, body any) {
+	payload, err := json.MarshalIndent(body, "", "  ")
+	if err != nil {
+		slog.Error("failed to marshal response", "remote_addr", r.RemoteAddr, "error", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(status)
 	if _, err := w.Write(payload); err != nil {
 		slog.Info("failed to write response", "remote_addr", r.RemoteAddr, "error", err)
 	}
+}
+
+func writeJSONError(w http.ResponseWriter, r *http.Request, status int, msg string) {
+	payload, err := json.MarshalIndent(jsonError{msg}, "", "  ")
+	if err != nil {
+		slog.Error("failed to marshal error response", "remote_addr", r.RemoteAddr, "error", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	http.Error(w, string(payload), status)
 }
 
 // flattenValues turns uritemplate/v3's Values into a JSON-friendly shape:

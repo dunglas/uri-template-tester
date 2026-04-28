@@ -102,9 +102,11 @@ readinessProbe:
   timeoutSeconds: 5
   failureThreshold: 4
 
-# NetworkPolicy locking ingress to the ingress-nginx namespace and egress to
-# DNS only (this app makes no outbound calls). Namespaces are matched via
-# the kubernetes.io/metadata.name auto-label (always present on K8s 1.22+).
+# NetworkPolicy: ingress is allowed from the configured ingress controller
+# namespace and from the release namespace itself (so `helm test` and other
+# in-namespace callers keep working); egress is restricted to DNS only
+# (the app makes no outbound HTTP calls). Namespaces are matched via the
+# kubernetes.io/metadata.name auto-label (always present on K8s 1.22+).
 networkPolicy:
   enabled: true
   ingressNamespace: ingress-nginx
