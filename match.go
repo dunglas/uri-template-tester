@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/yosida95/uritemplate"
+	"github.com/yosida95/uritemplate/v3"
 )
 
 type jsonError struct {
@@ -59,9 +59,32 @@ func match(w http.ResponseWriter, r *http.Request) {
 
 	payload, _ := json.MarshalIndent(struct {
 		Match  bool
-		Values uritemplate.Values
-	}{true, match}, "", "  ")
+		Values map[string]any
+	}{true, flattenValues(match)}, "", "  ")
 	if _, err := w.Write(payload); err != nil {
 		slog.Info("failed to write response", "remote_addr", r.RemoteAddr, "error", err)
 	}
+}
+
+// flattenValues turns uritemplate/v3's Values into a JSON-friendly shape:
+// single-string variables come out as strings, lists as []string, key/value
+// arrays as map[string]string. Keeps the rendered output readable in the UI.
+func flattenValues(v uritemplate.Values) map[string]any {
+	out := make(map[string]any, len(v))
+	for k, val := range v {
+		switch val.T {
+		case uritemplate.ValueTypeList:
+			out[k] = val.List()
+		case uritemplate.ValueTypeKV:
+			kv := val.KV()
+			m := make(map[string]string, len(kv)/2)
+			for i := 0; i+1 < len(kv); i += 2 {
+				m[kv[i]] = kv[i+1]
+			}
+			out[k] = m
+		default:
+			out[k] = val.String()
+		}
+	}
+	return out
 }

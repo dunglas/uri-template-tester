@@ -5,6 +5,8 @@ metadata:
   labels:
     {{- include "uri-template-tester.labels" . | nindent 4 }}
 spec:
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 300
 {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
 {{- end }}
@@ -25,6 +27,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "uri-template-tester.serviceAccountName" . }}
+      automountServiceAccountToken: false
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,16 +38,20 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.containerPort }}
               protocol: TCP
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
           livenessProbe:
-            httpGet:
-              path: /
-              port: http
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /
-              port: http
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
