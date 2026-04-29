@@ -30,6 +30,10 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "uri-template-tester.serviceAccountName" . }}
       automountServiceAccountToken: false
+      # The static binary serves a single HTTP endpoint and reads no
+      # service-discovery env vars, so suppress the K8s default that
+      # injects every neighbour Service's host/port into the pod.
+      enableServiceLinks: false
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
